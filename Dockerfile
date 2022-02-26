@@ -36,49 +36,50 @@ RUN ../configure --with-python-binding --prefix=/tmp/built
 RUN make clean
 RUN make
 RUN make install
-#RUN pwd
-#RUN ls -alh
-#RUN cat Makefile
 
-#RUN  dpkg-buildpackage -d -us -uc;
-#RUN make install
+FROM debian:bullseye-slim
 
-#RUN aptitude search libgd && fail
-#RUN aptitude search libreadline && fail
-
-FROM debian:bullseye-slim as install
-#FROM build as install
+LABEL maintainer="Mark Vincett <kd2qar@gmail.com>"
 
 COPY dot.bashrc /root/.bashrc
 
-
-RUN apt-get update && apt-get -y upgrade;
 ENV DEBIAN_FRONTEND="noninteractive" TZ="America/New_York"
-RUN apt-get install -y make;
-RUN apt-get install -y  libusb-1.0-0 libnova-0.16-0 libgd3 zlib1g libltdl7
-RUN apt-get install -y libreadline8
 
-RUN mkdir /tmp/ramdisk
-#RUN chmod 777 /tmp/ramdisk
-#RUN mount -t tmpfs -o size=1024m myramdisk /tmp/ramdisk
-#RUN ls /tmp/
-#RUN mount -t tmpfs -o size=2m ff /tmp/ramdisk
+RUN apt-get update && apt-get -y upgrade;\
+    apt-get install -y  libusb-1.0-0 libnova-0.16-0 libgd3 zlib1g libltdl7 libreadline8;\
+### Cleanup
+        apt-get autoremove --purge -y || true && \
+        apt-get clean || true && \
+        apt-get autoclean; \
+## Clean up the apt debris
+rm -rf /var/lib/apt/lists/* || true && \
+        rm -rf /tmp/* /var/tmp/ || true && \
+        rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true ;  
 
-#COPY --from=build /root/hamlib /tmp/ramdisk/hamlib
-#COPY --from=build /root/hamlib/*.tar.gz /root/
-COPY --from=build /tmp/built /root/built
-COPY --from=build /root/configure.txt /root/configure.txt
-RUN mv /root/built/lib/* /usr/local/lib/
-RUN mv /root/built/bin/* /usr/local/bin/
-RUN mv /root/built/include/* /usr/local/include/
-RUN mv /root/built/share/* /usr/local/share/
+#COPY --from=build /tmp/built /root/built
+
+COPY --from=build /tmp/built/lib       /usr/local/lib
+COPY --from=build /tmp/built/bin       /usr/local/bin
+COPY --from=build /tmp/built/include   /usr/local/include
+COPY --from=build /tmp/built/share     /usr/local/share
 RUN ldconfig
-#RUN ls -alh /usr/local/lib
-#WORKDIR /tmp/ramdisk/hamlib
-#RUN make install && rm -rf *
-WORKDIR /root/
-#RUN make install
 
+#RUN du -hs /usr/local/lib
+#RUN du -hs /usr/local/share/
+
+
+#COPY --from=build /root/configure.txt /root/configure.txt
+
+## COPY THE HAMLIB BINARIES TO THE INSTALL LOCATIONS
+#RUN mv /root/built/lib/* /usr/local/lib/ &&\
+#    mv /root/built/bin/* /usr/local/bin/ && \
+#    mv /root/built/include/* /usr/local/include/ && \
+#    mv /root/built/share/* /usr/local/share/ && \
+#    rm -rf  /root/built && \
+#     ldconfig
+
+#RUN ls -alh /usr/local/lib
+WORKDIR /root/
 
 CMD ["/bin/bash"] 
 
