@@ -5,3 +5,4 @@ IGNORE
 DoNotBackup
 Dockerfile
 Makefile
+hamlib

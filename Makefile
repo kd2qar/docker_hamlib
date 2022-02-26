@@ -7,7 +7,8 @@ FULLVERSION ?= ${VERSION}
 archs = i386
 archs = x64
 
-NAME = madhut/hamlib
+TAG=kd2qar/hamlib
+NAME=hamlib
 
 all:: build
 
@@ -16,11 +17,11 @@ build:
 	#$(foreach arch,$(archs), \
 #		docker build --rm --tag=$(NAME):${VERSION}-${arch} ${CACHE} .; \
 #	)
-	docker build --rm --tag=${NAME}  .
+	docker build --pull --force-rm --tag=${TAG}  .
 
 shell:
-	docker run --interactive --rm --tty  $(NAME) /bin/bash
+	docker run --interactive --rm --tty  $(TAG) /bin/bash
 test:
 	docker run --privileged -it --rm -v /dev/bus/usb:/dev/bus/usb  $(NAME)  
-run:
-	docker run --privileged -d --restart=always -v /dev/bus/usb:/dev/bus/usb  ${NAME} --name hamlib
+#run:
+#	docker run --privileged -d --restart=always -v /dev/bus/usb:/dev/bus/usb  ${NAME} --name hamlib
