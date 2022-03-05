@@ -1,6 +1,8 @@
 FROM debian:bullseye-slim as build
 LABEL maintainer="Mark Vincett <markvincett@gmail.com>"
 
+ARG BRANCH=master
+
 WORKDIR /root
 
 #RUN pwd && ls -alh && ls -alh /root/
@@ -28,6 +30,8 @@ COPY dot.bashrc /root/.bashrc
 ENV  PYTHON /usr/bin/python3
 
 RUN git clone git://git.code.sf.net/p/hamlib/code hamlib
+WORKDIR /root/hamlib
+RUN git checkout ${BRANCH}
 
 WORKDIR /root/hamlib/build
 RUN ../bootstrap
