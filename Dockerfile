@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim as build
+FROM debian:bullseye-slim AS build
 LABEL maintainer="Mark Vincett <kd2qar@gmail.com>"
 
 WORKDIR /root
@@ -27,7 +27,7 @@ RUN apt-get -y install vim vim-common
 
 COPY dot.bashrc /root/.bashrc
 
-ENV  PYTHON /usr/bin/python3
+ENV  PYTHON=/usr/bin/python3
 
 ARG BRANCH=master
 
