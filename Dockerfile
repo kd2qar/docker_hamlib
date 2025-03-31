@@ -3,16 +3,12 @@ LABEL maintainer="Mark Vincett <kd2qar@gmail.com>"
 
 WORKDIR /root
 
-#RUN pwd && ls -alh && ls -alh /root/
-
 RUN apt-get update && apt-get -y upgrade; 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="America/New_York"
 RUN apt-get -y install aptitude;
 RUN apt-get -y install --no-install-recommends git 
 RUN apt-get -y install --no-install-recommends build-essential autoconf automake libtool texinfo cmake;
 RUN apt-get -y install --no-install-recommends libsamplerate0-dev libsamplerate0  libportaudio2 libjack0 portaudio19-dev libfltk1.3 libfltk1.3-dev libpulse-dev pavucontrol
-
-#RUN apt-get -y install aptitude; aptitude search libpng
 
 RUN apt-get -y install --no-install-recommends libpng-dev swig
 RUN aptitude search libgd*-dev
@@ -61,17 +57,11 @@ rm -rf /var/lib/apt/lists/* || true && \
         rm -rf /tmp/* /var/tmp/ || true && \
         rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true ;  
 
-#COPY --from=build /tmp/built /root/built
-
 COPY --from=build /tmp/built/lib       /usr/local/lib
 COPY --from=build /tmp/built/bin       /usr/local/bin
 COPY --from=build /tmp/built/include   /usr/local/include
 COPY --from=build /tmp/built/share     /usr/local/share
 RUN ldconfig
-
-#RUN du -hs /usr/local/lib
-#RUN du -hs /usr/local/share/
-
 
 #COPY --from=build /root/configure.txt /root/configure.txt
 

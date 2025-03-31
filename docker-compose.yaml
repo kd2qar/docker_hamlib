@@ -1,0 +1,30 @@
+# build two images one for hamlib 4 and one for hamlib 3
+# breaking changes in hamlib 4 necessitate the availability of both images
+
+x-anchors:
+  tag: &tag kd2qar/hamlib
+  tag4: &tag4 kd2qar/hamlib4
+  tag3: &tag3 kd2qar/hamlib3
+  name: &name hamlib
+    #build:
+    #- docker build --pull --force-rm --build-arg BRANCH=master --tag=${TAG4} --tag=${TAG} .
+    #- docker build --pull --force-rm --build-arg BRANCH=Hamlib-3.3 --tag=${TAG3} .
+
+
+services:
+  hamlib:
+    build:
+      tags:
+        - kd2qar/hamlib
+        - kd2qar/hamlib4
+      args:
+        BRANCH: master
+
+  hamlib3:
+    build:
+      tags:
+        - kd2qar/hamlib3
+      args:
+        BRANCH: Hamlib-3.3
+
+
